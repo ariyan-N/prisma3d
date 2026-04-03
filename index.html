@@ -201,10 +201,12 @@
 
   /* ===== DEMO VIDEO GRID ===== */
   .demo-videos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
     gap: 24px;
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
   }
   .demo-video-card {
@@ -214,6 +216,14 @@
     overflow: hidden;
     transition: transform 0.3s, border-color 0.3s;
     box-shadow: 0 0 30px rgba(255,215,0,0.06);
+    flex: 1 1 300px;
+    min-width: 260px;
+    max-width: 460px;
+  }
+  .demo-video-card.portrait {
+    flex: 0 0 210px;
+    min-width: 180px;
+    max-width: 240px;
   }
   .demo-video-card:hover {
     transform: translateY(-4px);
@@ -247,14 +257,20 @@
     aspect-ratio: 16/9;
     background: #08080f;
   }
+  .video-wrapper.portrait-ratio {
+    aspect-ratio: 9/16;
+  }
   .video-wrapper video {
     width: 100%;
     height: 100%;
     display: block;
-    object-fit: cover;
+    object-fit: contain;
+    background: #08080f;
   }
-  /* Style native video controls to match theme */
-  .video-wrapper video::-webkit-media-controls-panel { background: rgba(10,10,15,0.9); }
+  @media (max-width: 640px) {
+    .demo-video-card { flex: 1 1 100%; max-width: 100%; }
+    .demo-video-card.portrait { flex: 0 0 auto; max-width: 300px; margin: 0 auto; }
+  }
 
   /* ===== VIDEO PREVIEW SECTION ===== */
   .video-section {
@@ -380,13 +396,82 @@
 
   /* ===== PRICING ===== */
   .pricing-section { padding: 80px 20px; }
+
+  /* Desktop: side by side grid (Basic + Standard only, Pro separate) */
   .pricing-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: 1fr 1fr;
     gap: 28px;
-    max-width: 900px;
+    max-width: 860px;
     margin: 0 auto;
     align-items: start;
+  }
+  .pricing-pro-row {
+    max-width: 860px;
+    margin: 28px auto 0;
+  }
+  .plan-card.pro-card {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  /* Mobile slider */
+  .pricing-slider-wrap {
+    display: none;
+    position: relative;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  .pricing-slider-track {
+    display: flex;
+    overflow: hidden;
+    border-radius: 20px;
+  }
+  .pricing-slide {
+    flex: 0 0 100%;
+    transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+  }
+  .slider-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .slider-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,215,0,0.25);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .slider-dot.active {
+    background: var(--gold);
+    transform: scale(1.3);
+  }
+  .slider-arrow {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(255,215,0,0.12);
+    border: 1px solid rgba(255,215,0,0.3);
+    color: var(--gold);
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    transition: background 0.2s;
+  }
+  .slider-arrow:hover { background: rgba(255,215,0,0.25); }
+  .slider-arrow.left { left: -20px; }
+  .slider-arrow.right { right: -20px; }
+
+  @media (max-width: 680px) {
+    .pricing-grid { display: none; }
+    .pricing-slider-wrap { display: block; }
+    .pricing-pro-row { display: none; } /* pro shown inside slider on mobile */
   }
 
   .plan-card {
@@ -402,9 +487,7 @@
   .plan-card.recommended {
     border-color: var(--gold);
     box-shadow: 0 0 60px rgba(255,215,0,0.2), 0 0 0 1px rgba(255,215,0,0.3);
-    transform: scale(1.04);
   }
-  .plan-card.recommended:hover { transform: scale(1.04) translateY(-8px); }
 
   .rec-tag {
     background: linear-gradient(90deg, var(--fire), var(--gold2));
@@ -466,21 +549,41 @@
     border-radius: 20px;
   }
 
-  .plan-features { padding: 24px 28px; }
+  .plan-features { padding: 20px 24px; }
   .feature-item {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 14px;
-    font-size: 0.92rem;
-    color: rgba(240,234,214,0.85);
-    line-height: 1.5;
+    gap: 10px;
+    margin-bottom: 11px;
+    font-size: 0.9rem;
+    line-height: 1.45;
   }
-  .feature-item .icon { flex-shrink: 0; font-size: 1rem; margin-top: 2px; }
+  .feature-item.has { color: rgba(240,234,214,0.88); }
+  .feature-item.hasnt { color: rgba(140,130,120,0.6); text-decoration: none; }
+  .fi-icon {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 900;
+    margin-top: 1px;
+  }
+  .fi-icon.check {
+    background: rgba(0,220,100,0.15);
+    border: 1.5px solid rgba(0,220,100,0.5);
+    color: #00dc64;
+  }
+  .fi-icon.cross {
+    background: rgba(255,60,60,0.12);
+    border: 1.5px solid rgba(255,60,60,0.35);
+    color: #ff4444;
+  }
+  .fi-label { flex: 1; }
+  .fi-label strong { color: var(--gold); }
+  .fi-label.accent strong { color: var(--accent); }
 
-  .plan-cta {
-    margin: 4px 28px 28px;
-  }
+  .plan-cta { margin: 4px 24px 24px; }
   .btn {
     display: block;
     width: 100%;
@@ -503,7 +606,6 @@
     color: var(--gold);
   }
   .btn-basic:hover { background: rgba(255,215,0,0.1); border-color: var(--gold); }
-
   .btn-standard {
     background: linear-gradient(135deg, var(--fire) 0%, var(--gold2) 100%);
     color: #000;
@@ -511,7 +613,6 @@
     box-shadow: 0 8px 30px rgba(255,69,0,0.4);
   }
   .btn-standard:hover { transform: scale(1.03); box-shadow: 0 12px 40px rgba(255,69,0,0.6); }
-
   .btn-pro {
     background: rgba(255,255,255,0.05);
     border: 2px solid rgba(255,255,255,0.1);
@@ -519,7 +620,6 @@
     cursor: not-allowed;
   }
 
-  /* Coming Soon plan */
   .plan-card.coming-soon { opacity: 0.6; }
   .coming-badge {
     display: inline-block;
@@ -836,9 +936,9 @@
   <div class="demo-videos-grid">
 
     <div class="demo-video-card">
-      <div class="demo-label"><span class="free-tag">FREE</span> Demo video</div>
+      <div class="demo-label"><span class="free-tag">FREE</span> Demo 1 — Model Import</div>
       <div class="video-wrapper">
-        <video controls preload="metadata" poster="">
+        <video controls preload="metadata">
           <source src="video1.mp4" type="video/mp4">
           তোমার browser এই video support করে না।
         </video>
@@ -846,19 +946,19 @@
     </div>
 
     <div class="demo-video-card">
-      <div class="demo-label"><span class="free-tag">FREE</span> Demo video</div>
+      <div class="demo-label"><span class="free-tag">FREE</span> Demo 2 — Animation Setup</div>
       <div class="video-wrapper">
-        <video controls preload="metadata" poster="">
+        <video controls preload="metadata">
           <source src="video2.mp4" type="video/mp4">
           তোমার browser এই video support করে না।
         </video>
       </div>
     </div>
 
-    <div class="demo-video-card">
-      <div class="demo-label"><span class="free-tag">FREE</span> Demo video</div>
-      <div class="video-wrapper" style="aspect-ratio:9/16;max-width:320px;margin:0 auto;">
-        <video controls preload="metadata" poster="">
+    <div class="demo-video-card portrait">
+      <div class="demo-label"><span class="free-tag">FREE</span> Demo 3 — Final Export</div>
+      <div class="video-wrapper portrait-ratio">
+        <video controls preload="metadata">
           <source src="video3.mp4" type="video/mp4">
           তোমার browser এই video support করে না।
         </video>
@@ -901,13 +1001,14 @@
   <h2 class="section-title">Plan বেছে নাও</h2>
   <p class="section-sub">একবার কিনো, lifetime শেখো</p>
 
+  <!-- DESKTOP: side by side -->
   <div class="pricing-grid">
 
     <!-- BASIC -->
     <div class="plan-card">
       <div class="plan-header">
         <div class="plan-name">🟢 Basic</div>
-        <div class="plan-desc">এখনই শুরু করতে চাও? এটা তোমার জন্য।<br>Beginner Start Pack.</div>
+        <div class="plan-desc">এখনই শুরু করতে চাও? Beginner Start Pack.</div>
         <div class="price-row">
           <span class="price-old">৳599</span>
           <span class="price-new">৳299</span>
@@ -915,24 +1016,32 @@
         </div>
       </div>
       <div class="plan-features">
-        <div class="feature-item"><span class="icon">✅</span> Prisma app install + setup (step by step)</div>
-        <div class="feature-item"><span class="icon">✅</span> Basic UI চেনা — কোথায় কী আছে</div>
-        <div class="feature-item"><span class="icon">✅</span> Free Fire model import করা শেখা</div>
-        <div class="feature-item"><span class="icon">✅</span> Ready-made animation use (drag & drop)</div>
-        <div class="feature-item"><span class="icon">✅</span> Simple scene তৈরি + video export</div>
-        <div class="feature-item"><span class="icon">✅</span> তুমি নিজের প্রথম 3D video বানাতে পারবে ✔</div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Prisma install + setup (step by step)</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Basic UI চেনা — কোথায় কী আছে</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Free Fire model import শেখা</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Ready-made animation use (drag & drop)</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Simple scene তৈরি + video export</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">নিজের প্রথম 3D video বানাতে পারবে</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Full rigging + animation control</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Custom animation (Prisma)</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Mixamo edit tricks</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Low device optimization</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Premium templates + model pack</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Custom model extraction</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Earning Guide</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Private Telegram Group</span></div>
       </div>
       <div class="plan-cta">
         <a href="#" class="btn btn-basic">এখনই শুরু করো →</a>
       </div>
     </div>
 
-    <!-- STANDARD (RECOMMENDED) -->
+    <!-- STANDARD -->
     <div class="plan-card recommended">
       <div class="rec-tag">⭐ RECOMMENDED — 80% Students এটাই নেয়</div>
       <div class="plan-header">
         <div class="plan-name">🟡 Standard</div>
-        <div class="plan-desc">Full skill + earning system. এটা নিলে তুমি <strong style="color:var(--gold)">সত্যিকারের Pro</strong> হবে।</div>
+        <div class="plan-desc">Full skill + earning system. সত্যিকারের <strong style="color:var(--gold)">Pro</strong> হওয়ার package।</div>
         <div class="price-row">
           <span class="price-old">৳999</span>
           <span class="price-new">৳699</span>
@@ -940,45 +1049,148 @@
         </div>
       </div>
       <div class="plan-features">
-        <div class="feature-item"><span class="icon">🔥</span> Basic-এর সব কিছু + নিচের সব</div>
-        <div class="feature-item"><span class="icon">🦾</span> Full rigging + animation control</div>
-        <div class="feature-item"><span class="icon">🎨</span> Prisma দিয়ে custom animation বানানো</div>
-        <div class="feature-item"><span class="icon">🏃</span> Mixamo edit tricks + walking extend</div>
-        <div class="feature-item"><span class="icon">📱</span> Low device optimization (lag ছাড়া)</div>
-        <div class="feature-item"><span class="icon">📐</span> Screen ratio guide (YouTube/Reels/TikTok)</div>
-        <div class="feature-item"><span class="icon">🗂️</span> Ready-made premium templates</div>
-        <div class="feature-item"><span class="icon">💎</span> Premium FF model pack included</div>
-        <div class="feature-item"><span class="icon">🔧</span> <strong style="color:var(--gold)">1টি custom model extraction (তোমার নিজের FF skin!)</strong></div>
-        <div class="feature-item"><span class="icon">💀</span> <strong style="color:var(--accent)">Earning Guide — এই skill দিয়ে কীভাবে income করবে (step by step)</strong></div>
-        <div class="feature-item"><span class="icon">💬</span> Private Telegram Group (Q&A + Help + Updates)</div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Prisma install + setup (step by step)</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Basic UI চেনা — কোথায় কী আছে</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Free Fire model import শেখা</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Ready-made animation use (drag & drop)</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Simple scene তৈরি + video export</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">নিজের প্রথম 3D video বানাতে পারবে</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Full rigging + animation control</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Custom animation (Prisma)</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Mixamo edit tricks + walking extend</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Low device optimization (lag ছাড়া)</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Screen ratio guide (YouTube/Reels/TikTok)</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Premium templates + model pack</span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label"><strong>1টি custom model extraction (নিজের FF skin!)</strong></span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label accent"><strong>Earning Guide — income শুরু করার step by step রাস্তা</strong></span></div>
+        <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Private Telegram Group (Q&A + Help + Updates)</span></div>
       </div>
       <div class="plan-cta">
         <a href="#" class="btn btn-standard">🔥 এখনই Enroll করো →</a>
       </div>
     </div>
 
-    <!-- PRO -->
-    <div class="plan-card coming-soon">
+  </div>
+
+  <!-- Pro card desktop -->
+  <div class="pricing-pro-row">
+    <div class="plan-card coming-soon pro-card">
       <div class="plan-header">
         <div class="coming-badge">⏳ COMING SOON</div>
         <div class="plan-name">🔴 Pro</div>
-        <div class="plan-desc">Advanced techniques + exclusive content + 1-on-1 mentorship. শীঘ্রই আসছে।</div>
-        <div class="price-row">
-          <span class="price-new" style="font-size:1.6rem;opacity:0.5;">৳???</span>
-        </div>
+        <div class="plan-desc">Advanced + exclusive + 1-on-1 mentorship। শীঘ্রই আসছে।</div>
+        <div class="price-row"><span class="price-new" style="font-size:1.6rem;opacity:0.5;">৳???</span></div>
       </div>
       <div class="plan-features">
-        <div class="feature-item"><span class="icon">🔒</span> Advanced scene composition</div>
-        <div class="feature-item"><span class="icon">🔒</span> Full VFX + cinematic effects</div>
-        <div class="feature-item"><span class="icon">🔒</span> 1-on-1 mentorship session</div>
-        <div class="feature-item"><span class="icon">🔒</span> Exclusive content + secret tricks</div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Advanced scene composition</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Full VFX + cinematic effects</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">1-on-1 mentorship session</span></div>
+        <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Exclusive secret tricks</span></div>
       </div>
-      <div class="plan-cta">
-        <button class="btn btn-pro">Notify Me</button>
-      </div>
+      <div class="plan-cta"><button class="btn btn-pro">Notify Me</button></div>
     </div>
-
   </div>
+
+  <!-- MOBILE: slider -->
+  <div class="pricing-slider-wrap">
+    <button class="slider-arrow left" id="sliderPrev">‹</button>
+    <button class="slider-arrow right" id="sliderNext">›</button>
+
+    <div class="pricing-slider-track" id="sliderTrack">
+
+      <!-- Slide 1: Basic -->
+      <div class="pricing-slide">
+        <div class="plan-card" style="border-radius:20px;">
+          <div class="plan-header">
+            <div class="plan-name">🟢 Basic</div>
+            <div class="plan-desc">Beginner Start Pack.</div>
+            <div class="price-row">
+              <span class="price-old">৳599</span>
+              <span class="price-new">৳299</span>
+              <span class="price-save">50% OFF</span>
+            </div>
+          </div>
+          <div class="plan-features">
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Prisma install + setup</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Basic UI চেনা</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">FF model import</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Ready-made animation use</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Scene তৈরি + video export</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">প্রথম 3D video বানাতে পারবে</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Full rigging + animation control</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Custom animation (Prisma)</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Mixamo edit tricks</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Low device optimization</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Premium templates + model pack</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Custom model extraction</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Earning Guide</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Private Telegram Group</span></div>
+          </div>
+          <div class="plan-cta"><a href="#" class="btn btn-basic">শুরু করো →</a></div>
+        </div>
+      </div>
+
+      <!-- Slide 2: Standard -->
+      <div class="pricing-slide">
+        <div class="plan-card recommended" style="border-radius:20px;transform:none;">
+          <div class="rec-tag">⭐ RECOMMENDED</div>
+          <div class="plan-header">
+            <div class="plan-name">🟡 Standard</div>
+            <div class="plan-desc">Full skill + earning system.</div>
+            <div class="price-row">
+              <span class="price-old">৳999</span>
+              <span class="price-new">৳699</span>
+              <span class="price-save">30% OFF</span>
+            </div>
+          </div>
+          <div class="plan-features">
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Prisma install + setup</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Basic UI চেনা</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">FF model import</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Ready-made animation use</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Scene তৈরি + video export</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">প্রথম 3D video বানাতে পারবে</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Full rigging + animation control</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Custom animation (Prisma)</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Mixamo edit tricks + walking extend</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Low device optimization</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Screen ratio guide</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Premium templates + model pack</span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label"><strong>Custom model extraction</strong></span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label"><strong style="color:var(--accent)">Earning Guide (step by step)</strong></span></div>
+            <div class="feature-item has"><span class="fi-icon check">✓</span><span class="fi-label">Private Telegram Group</span></div>
+          </div>
+          <div class="plan-cta"><a href="#" class="btn btn-standard">🔥 Enroll করো →</a></div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Pro -->
+      <div class="pricing-slide">
+        <div class="plan-card coming-soon" style="border-radius:20px;opacity:0.7;">
+          <div class="plan-header">
+            <div class="coming-badge">⏳ COMING SOON</div>
+            <div class="plan-name">🔴 Pro</div>
+            <div class="plan-desc">Advanced + exclusive + mentorship.</div>
+            <div class="price-row"><span class="price-new" style="font-size:1.6rem;opacity:0.5;">৳???</span></div>
+          </div>
+          <div class="plan-features">
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Advanced scene composition</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Full VFX + cinematic effects</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">1-on-1 mentorship session</span></div>
+            <div class="feature-item hasnt"><span class="fi-icon cross">✕</span><span class="fi-label">Exclusive secret tricks</span></div>
+          </div>
+          <div class="plan-cta"><button class="btn btn-pro">Notify Me</button></div>
+        </div>
+      </div>
+
+    </div><!-- /track -->
+
+    <div class="slider-dots">
+      <button class="slider-dot active" data-idx="0"></button>
+      <button class="slider-dot" data-idx="1"></button>
+      <button class="slider-dot" data-idx="2"></button>
+    </div>
+  </div><!-- /slider-wrap -->
 
   <!-- Scarcity Bar -->
   <div class="scarcity-bar">
@@ -1048,6 +1260,16 @@
 </div>
 
 <script>
+  // One video at a time — pause others when one plays
+  const allVideos = document.querySelectorAll('.video-wrapper video');
+  allVideos.forEach(vid => {
+    vid.addEventListener('play', () => {
+      allVideos.forEach(other => {
+        if (other !== vid) other.pause();
+      });
+    });
+  });
+
   // Custom cursor
   const cursor = document.getElementById('cursor');
   const dot = document.getElementById('cursorDot');
@@ -1121,6 +1343,49 @@
     el.dataset.transform = 'translateY(0)';
     observer.observe(el);
   });
+  // Pricing Slider (mobile)
+  (function() {
+    const track = document.getElementById('sliderTrack');
+    const slides = track ? track.querySelectorAll('.pricing-slide') : [];
+    const dots = document.querySelectorAll('.slider-dot');
+    const prev = document.getElementById('sliderPrev');
+    const next = document.getElementById('sliderNext');
+    let current = 0;
+    const total = slides.length;
+
+    function goTo(idx) {
+      current = (idx + total) % total;
+      slides.forEach((s, i) => {
+        s.style.transform = `translateX(${(i - current) * 100}%)`;
+      });
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    // init positions
+    slides.forEach((s, i) => { s.style.transform = `translateX(${i * 100}%)`; s.style.position = 'absolute'; s.style.top = '0'; s.style.left = '0'; s.style.width = '100%'; });
+    if (track) { track.style.position = 'relative'; track.style.minHeight = '10px'; }
+
+    // set track height dynamically
+    function setTrackHeight() {
+      if (!track || !slides[current]) return;
+      track.style.height = slides[current].offsetHeight + 'px';
+    }
+    setTimeout(setTrackHeight, 100);
+
+    if (prev) prev.addEventListener('click', () => { goTo(current - 1); setTimeout(setTrackHeight, 420); });
+    if (next) next.addEventListener('click', () => { goTo(current + 1); setTimeout(setTrackHeight, 420); });
+    dots.forEach(d => d.addEventListener('click', () => { goTo(+d.dataset.idx); setTimeout(setTrackHeight, 420); }));
+
+    // touch swipe
+    let startX = 0;
+    if (track) {
+      track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive:true});
+      track.addEventListener('touchend', e => {
+        const diff = startX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) { goTo(diff > 0 ? current + 1 : current - 1); setTimeout(setTrackHeight, 420); }
+      }, {passive:true});
+    }
+  })();
 </script>
 </body>
 </html>
